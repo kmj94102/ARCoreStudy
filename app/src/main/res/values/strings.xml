@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">ARCoreStudy</string>
+    <string name="permission_denied_message">앱을 사용하기 위해서는 권한 허용이 필요합니다.\n\n[휴대폰 설정] > [앱 또는 어플리케이션 관리] > [마이빌딩북] > [권한]에서 해당 권한을
+        활성화 해주세요.\n\n바로 권한 허용 하시려면 설정 버튼을 선택 해주세요.
+    </string>
 </resources>
