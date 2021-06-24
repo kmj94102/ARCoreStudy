@@ -17,6 +17,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<AugmentedImageActivity>()
         }
 
+        binding.btnEx2.setOnClickListener {
+            startActivity<LoadFirebaseActivity>()
+        }
+
     }
 
 }

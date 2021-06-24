@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "479347499969",
+    "project_id": "subway-78dbd",
+    "storage_bucket": "subway-78dbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479347499969:android:825dbaa674ac55102ec540",
+        "android_client_info": {
+          "package_name": "com.example.arcorestudy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "479347499969-kqlm3dm40kbp400arcim2kdv46a5o654.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdbxd7V_0Dppgs22VoPlVXOoPcr3vcIGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "479347499969-kqlm3dm40kbp400arcim2kdv46a5o654.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479347499969:android:ebc8d7a2ba1810742ec540",
+        "android_client_info": {
+          "package_name": "com.example.subway"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "479347499969-kqlm3dm40kbp400arcim2kdv46a5o654.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdbxd7V_0Dppgs22VoPlVXOoPcr3vcIGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "479347499969-kqlm3dm40kbp400arcim2kdv46a5o654.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
