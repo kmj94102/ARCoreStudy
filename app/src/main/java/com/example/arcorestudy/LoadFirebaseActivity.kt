@@ -42,7 +42,7 @@ class LoadFirebaseActivity : AppCompatActivity() {
             }
         }
 
-        arFragment.setOnTapArPlaneListener{ hitResult, plance, motionEvent ->
+        arFragment.setOnTapArPlaneListener{ hitResult, _, _ ->
             val anchorNode =AnchorNode(hitResult.createAnchor())
             anchorNode.renderable = renderable
             arFragment.arSceneView.scene.addChild(anchorNode)

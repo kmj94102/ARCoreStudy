@@ -21,6 +21,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<LoadFirebaseActivity>()
         }
 
+        binding.btnEx3.setOnClickListener {
+            startActivity<SceneFormActivity>()
+        }
+
     }
 
 }

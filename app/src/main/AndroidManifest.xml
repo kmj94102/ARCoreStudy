@@ -6,7 +6,7 @@
     <uses-feature android:name="android.hardware.camera.ar" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ARCoreStudy">
-        <activity android:name=".LoadFirebaseActivity"/>
+        <activity android:name=".SceneFormActivity"></activity>
+        <activity android:name=".LoadFirebaseActivity" />
         <activity android:name=".AugmentedImageActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -23,8 +24,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!-- 'AR 필수' 일 경우 value 에 required 로 설정 / 'AR 선택' 일 경우 optional 로 설정 -->
+        </activity> <!-- 'AR 필수' 일 경우 value 에 required 로 설정 / 'AR 선택' 일 경우 optional 로 설정 -->
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />

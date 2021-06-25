@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SceneFormActivity">
+
+    <fragment
+        android:id="@+id/sceneFromUxFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:name="com.google.ar.sceneform.ux.ArFragment"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <HorizontalScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/btnCat"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/cat"
+                android:tag="0"
+                android:onClick="itemOnClick"/>
+
+            <ImageView
+                android:id="@+id/btnIvysaur"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ivysaur"
+                android:tag="1"
+                android:onClick="itemOnClick"/>
+
+            <ImageView
+                android:id="@+id/btnOut"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/out"
+                android:tag="2"
+                android:onClick="itemOnClick"/>
+
+            <ImageView
+                android:id="@+id/btnSpider"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/spider"
+                android:tag="3"
+                android:onClick="itemOnClick"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </HorizontalScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
