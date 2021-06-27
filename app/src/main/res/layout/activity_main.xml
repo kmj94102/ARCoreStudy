@@ -9,11 +9,22 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/btnMain"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="메인 앱"
+        android:backgroundTint="@color/teal_200"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
         android:id="@+id/btnEx1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Example 1"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMain"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -34,6 +45,16 @@
         android:layout_marginTop="20dp"
         android:text="Example 3"
         app:layout_constraintTop_toBottomOf="@id/btnEx2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/btnEx4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Example 4"
+        app:layout_constraintTop_toBottomOf="@id/btnEx3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

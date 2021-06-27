@@ -13,6 +13,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        binding.btnMain.setOnClickListener {
+            startActivity<ARCoreActivity>()
+        }
+
         binding.btnEx1.setOnClickListener {
             startActivity<AugmentedImageActivity>()
         }
@@ -23,6 +27,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnEx3.setOnClickListener {
             startActivity<SceneFormActivity>()
+        }
+
+        binding.btnEx4.setOnClickListener {
+            startActivity<AnimationActivity>()
         }
 
     }
