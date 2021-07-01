@@ -17,6 +17,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<ARCoreActivity>()
         }
 
+        binding.btnAugment.setOnClickListener {
+            startActivity<ARCoreAugmentedActivity>()
+        }
+
         binding.btnEx1.setOnClickListener {
             startActivity<AugmentedImageActivity>()
         }

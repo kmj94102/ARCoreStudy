@@ -10,19 +10,26 @@ import com.google.ar.core.*
 import com.google.ar.core.exceptions.*
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import org.jetbrains.anko.toast
+import java.io.File
 import java.io.IOException
+import java.lang.Exception
 
 class AugmentedImageActivity : AppCompatActivity(), Scene.OnUpdateListener {
 
     private val binding : ActivityAugmentedImageBinding by lazy { ActivityAugmentedImageBinding.inflate(layoutInflater) }
     private var session : Session? = null
     private var shouldConfigureSession : Boolean = false
+    private val fileName = "out.glb"
+    private var renderableFile : File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +53,51 @@ class AugmentedImageActivity : AppCompatActivity(), Scene.OnUpdateListener {
 
             }).check()
 
+        initDownload()
         initSceneView()
 
     }
+
+    private fun initDownload(){
+        try {
+            val storageRef = Firebase.storage.reference
+            val splitFileName = fileName.split(".")
+            val file = File.createTempFile(splitFileName[0], splitFileName[1])
+
+            storageRef.child(fileName).getFile(file).addOnSuccessListener {
+                renderableFile = file   // buildModel(file)
+            }
+        }catch (e: IOException){
+            e.printStackTrace()
+            toast("파일 다운로드중 오류가 발생하였습니다.")
+        }catch (e: Exception){
+            e.printStackTrace()
+            toast("파일 다운로드중 오류가 발생하였습니다.")
+        }
+    }
+
+//    private fun buildModel(file: File){
+//        val renderableSource =
+//            RenderableSource
+//                .builder()
+//                .setSource(this, Uri.parse(file.path), RenderableSource.SourceType.GLB)
+//                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+//                .build()
+//
+//        ModelRenderable
+//            .builder()
+//            .setSource(this, renderableSource)
+//            .setRegistryId(file.path)
+//            .build()
+//            .thenAccept{ modelRenderable ->
+//                toast("다운로드 완료")
+//                animationCrab = modelRenderable
+//            }
+//            .exceptionally {
+//                toast("${it.message}")
+//                return@exceptionally null
+//            }
+//    }
 
     private fun initSceneView(){
         binding.arView.scene.addOnUpdateListener(this)
@@ -100,7 +149,7 @@ class AugmentedImageActivity : AppCompatActivity(), Scene.OnUpdateListener {
         val bitmap = loadImage() ?: return false
         val augmentedImageDatabase = AugmentedImageDatabase(session)
 
-        augmentedImageDatabase.addImage("lion", bitmap)
+        augmentedImageDatabase.addImage("qr", bitmap)
         config.augmentedImageDatabase = augmentedImageDatabase
 
         return true
@@ -108,7 +157,7 @@ class AugmentedImageActivity : AppCompatActivity(), Scene.OnUpdateListener {
 
     private fun loadImage() : Bitmap? {
         try {
-            val inputStream = assets.open("lion_qr.jpeg")
+            val inputStream = assets.open("qr.png")
             return BitmapFactory.decodeStream(inputStream)
         }catch (e : IOException){
             e.printStackTrace()
@@ -154,10 +203,10 @@ class AugmentedImageActivity : AppCompatActivity(), Scene.OnUpdateListener {
         updateAugmentedImg?.let {
             for(image in it){
                 if(image.trackingState == TrackingState.TRACKING){
-                    if(image.name == "lion"){
-//                        val node = MyARNode(this, R.raw.lion)
-//                        node.setImage(image)
-//                        binding.arView.scene.addChild(node)
+                    if(image.name == "qr"){
+                        val node = MyARNode(this, renderableFile)
+                        node.setImage(image)
+                        binding.arView.scene.addChild(node)
                     }
                 }
             }

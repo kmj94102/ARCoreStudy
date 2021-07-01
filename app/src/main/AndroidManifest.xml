@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ARCoreStudy">
-        <activity android:name=".ARCoreActivity"/>
+        <activity android:name=".ARCoreAugmentedActivity"></activity>
+        <activity android:name=".ARCoreActivity" />
         <activity android:name=".AnimationActivity" />
         <activity android:name=".SceneFormActivity" />
         <activity android:name=".LoadFirebaseActivity" />
