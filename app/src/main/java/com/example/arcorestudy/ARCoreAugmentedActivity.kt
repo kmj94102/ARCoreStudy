@@ -1,41 +1,98 @@
 package com.example.arcorestudy
 
 import android.Manifest
-import android.content.Intent
-import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.databinding.ActivityArcoreAugmentedBinding
 import com.google.ar.core.*
 import com.google.ar.core.exceptions.*
+import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.Scene
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import org.jetbrains.anko.toast
 import java.io.File
+import java.io.IOException
 
 
-class ARCoreAugmentedActivity : AppCompatActivity(){
+class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
 
     private val binding : ActivityArcoreAugmentedBinding by lazy { ActivityArcoreAugmentedBinding.inflate(layoutInflater) }
+
     private lateinit var session : Session
-    private var shouldConfigureSession : Boolean = false
-    private val storage : StorageReference = Firebase.storage.reference
     private val fileName = "out.glb"
     private var renderableFile : File? = null
+    private var shouldConfigureSession : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        initSceneView()
+        getAugmentImage()
+        initDownload()
         checkCameraPermission()
 
-        binding.btnTest.setOnClickListener {
-            test()
+    }
 
+    private fun initSceneView(){
+        binding.arView.scene.addOnUpdateListener(this)
+    }
+
+    private fun initDownload(){
+        try {
+            val storageRef = Firebase.storage.reference
+            val splitFileName = fileName.split(".")
+            val file = File.createTempFile(splitFileName[0], splitFileName[1])
+
+            storageRef.child(fileName).getFile(file).addOnSuccessListener {
+                Log.e("+++++", "다운로드 완료")
+                renderableFile = file   // buildModel(file)
+            }
+        }catch (e: IOException){
+            e.printStackTrace()
+            toast("파일 다운로드중 오류가 발생하였습니다.")
+        }catch (e: java.lang.Exception){
+            e.printStackTrace()
+            toast("파일 다운로드중 오류가 발생하였습니다.")
         }
+    }
 
+    private fun configSession(){
+        val config = Config(session)
+        if(!buildDatabase(config)){
+            Toast.makeText(this, "Error database", Toast.LENGTH_SHORT).show()
+        }
+        config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+        session.configure(config)
+    }
+
+    private fun buildDatabase(config : Config) : Boolean{
+        val bitmap = getAugmentImage() ?: return false
+        val augmentedImageDatabase = AugmentedImageDatabase(session)
+
+        augmentedImageDatabase.addImage("qr", bitmap)
+        config.augmentedImageDatabase = augmentedImageDatabase
+
+        return true
+    }
+
+    private fun getAugmentImage() : Bitmap? {
+        try {
+            val inputStream = assets.open("qr.png")
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            binding.img.setImageBitmap(bitmap)
+            return bitmap
+        }catch (e : Exception){
+            e.printStackTrace()
+        }
+        return null
     }
 
     private fun checkCameraPermission(){
@@ -65,7 +122,7 @@ class ARCoreAugmentedActivity : AppCompatActivity(){
             config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
 
             // Configure the session
-            session.configure(config)
+            configSession()
 
             binding.arView.setupSession(session)
             session.resume()
@@ -87,19 +144,6 @@ class ARCoreAugmentedActivity : AppCompatActivity(){
 
     }
 
-    fun test(){
-        val sceneViewerIntent = Intent(Intent.ACTION_VIEW)
-        val intentUri: Uri = Uri.parse("https://arvr.google.com/scene-viewer/1.0").buildUpon()
-            .appendQueryParameter(
-                "file",
-                "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf"
-            )
-            .appendQueryParameter("mode", "ar_only")
-            .build()
-        sceneViewerIntent.data = intentUri
-        sceneViewerIntent.setPackage("com.google.ar.core")
-        startActivity(sceneViewerIntent)
-    }
 
     override fun onPause() {
         super.onPause()
@@ -114,6 +158,24 @@ class ARCoreAugmentedActivity : AppCompatActivity(){
         super.onDestroy()
 
         session.close()
+    }
+
+    override fun onUpdate(frameTime: FrameTime?) {
+        val frame = binding.arView.arFrame ?: return
+
+        frame.getUpdatedTrackables(AugmentedImage::class.java).forEach { plane ->
+            if(plane.trackingState == TrackingState.TRACKING){
+                if(plane.name == "qr"){
+                    Log.e("+++++", "qr")
+                    if(shouldConfigureSession.not()){
+                        shouldConfigureSession = true
+                        val node = MyARNode(this, renderableFile)
+                        node.setImage(plane)
+                        binding.arView.scene.addChild(node)
+                    }
+                }
+            }
+        }
     }
 
 }
