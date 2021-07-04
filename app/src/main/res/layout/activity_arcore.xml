@@ -32,6 +32,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/cell_model" />
 
+    <HorizontalScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#B3FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="20dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioInstantPlacement"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="즉시 배치"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/radioNameCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="이름표"/>
+
+            <RadioButton
+                android:id="@+id/radioAugmentedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="증강 이미지"/>
+
+        </RadioGroup>
+
+    </HorizontalScrollView>
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"

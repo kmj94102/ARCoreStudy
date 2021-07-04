@@ -3,14 +3,19 @@ package com.example.arcorestudy
 import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.databinding.ActivityArcoreAugmentedBinding
 import com.google.ar.core.*
 import com.google.ar.core.exceptions.*
+import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Scene
+import com.google.ar.sceneform.assets.RenderableSource
+import com.google.ar.sceneform.rendering.ModelRenderable
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import org.jetbrains.anko.toast
@@ -24,8 +29,9 @@ class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
 
     private lateinit var session : Session
     private val fileName = "out.glb"
-    private var renderableFile : File? = null
-    private var shouldConfigureSession : Boolean = false
+    private var isAgumentedImageVisible : Boolean = false
+    private var renderable : ModelRenderable? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +68,7 @@ class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
             assets.open(fileName).use { input->
                 file.outputStream().use { output ->
                     input.copyTo(output)
-                    renderableFile = file
+                    buildModel(file)
                 }
             }
 
@@ -113,7 +119,7 @@ class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
         // 깊이 활성화 또는 증강 얼굴 지원 켜기와 같은 기능별 작업을 여기서 수행하십시오.
         config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
         // 테스트 필요함
-        config.lightEstimationMode = Config.LightEstimationMode.AMBIENT_INTENSITY
+        config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
         // 즉시 배치 모드를 설정합니다.
         config.instantPlacementMode = Config.InstantPlacementMode.LOCAL_Y_UP
 
@@ -149,18 +155,42 @@ class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
     override fun onUpdate(frameTime: FrameTime?) {
         val frame = binding.arView.arFrame ?: return
 
-        frame.getUpdatedTrackables(AugmentedImage::class.java).forEach { plane ->
-            if(plane.trackingState == TrackingState.TRACKING){
-                if(plane.name == "qr"){
-                    if(shouldConfigureSession.not()){
-                        shouldConfigureSession = true
-                        val node = MyARNode(this, renderableFile)
-                        node.setImage(plane)
-                        binding.arView.scene.addChild(node)
+        frame.getUpdatedTrackables(AugmentedImage::class.java).forEach { augmentedImage ->
+            if(augmentedImage.trackingState == TrackingState.TRACKING){
+                if(augmentedImage.name == "qr"){
+                    if(isAgumentedImageVisible.not()){
+                        isAgumentedImageVisible = true
+                        val anchorNode = AnchorNode()
+                        anchorNode.renderable = renderable
+
+                        binding.arView.scene.addChild(anchorNode)
                     }
                 }
             }
         }
+    }
+
+    private fun buildModel(file: File){
+        val renderableSource =
+            RenderableSource
+                .builder()
+                .setSource(this, Uri.parse(file.path), RenderableSource.SourceType.GLB)
+                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                .build()
+
+        ModelRenderable
+            .builder()
+            .setSource(this, renderableSource)
+            .setRegistryId(file.path)
+            .build()
+            .thenAccept{ modelRenderable ->
+                toast("다운로드 완료")
+                renderable = modelRenderable
+            }
+            .exceptionally {
+                toast("${it.message}")
+                return@exceptionally null
+            }
     }
 
     override fun onPause() {

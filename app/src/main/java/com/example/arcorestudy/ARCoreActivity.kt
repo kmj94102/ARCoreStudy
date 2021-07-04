@@ -2,15 +2,21 @@ package com.example.arcorestudy
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.arcorestudy.adapter.ModelAdapter
 import com.example.arcorestudy.adapter.ModelItem
 import com.example.arcorestudy.databinding.ActivityArcoreBinding
+import com.google.ar.core.*
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.assets.RenderableSource
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
+import com.google.ar.sceneform.ux.TransformableNode
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import org.jetbrains.anko.toast
@@ -23,7 +29,11 @@ class ARCoreActivity : AppCompatActivity() {
     private lateinit var arFragment : ArFragment
 
     private lateinit var adapter: ModelAdapter
+    private var cardName : String? = null
     private var renderable : ModelRenderable? = null
+    private var shouldConfigureSession : Boolean = false
+    private var renderableFileList = mutableListOf<File?>(null, null, null, null, null)
+    private var position : Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +42,13 @@ class ARCoreActivity : AppCompatActivity() {
         initModelRecyclerView()
         bindModelRecyclerView()
         settingArFragment()
+
+        binding.radioAugmentedImage.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked){
+                settingAugmentedImage()
+            }
+        }
+
     }
 
     private fun initModelRecyclerView(){
@@ -48,7 +65,7 @@ class ARCoreActivity : AppCompatActivity() {
     }
 
     private fun modelDownload(modelItem: ModelItem, position: Int) {
-        downloadStartMessage()
+        settingDownloadStartState()
 
         try {
             val storageRef = Firebase.storage.reference
@@ -57,16 +74,16 @@ class ARCoreActivity : AppCompatActivity() {
 
             storageRef.child(modelItem.fileName).getFile(file).addOnSuccessListener {
                 buildModel(file, position)
+                this.position = position
+                renderableFileList[position] = file
             }
 
         }catch (e: IOException){
             e.printStackTrace()
-            binding.progressBar.isVisible = false
-            toast("파일 다운로드중 오류가 발생하였습니다.")
+            settingDownloadErrorState()
         }catch (e: Exception){
             e.printStackTrace()
-            binding.progressBar.isVisible = false
-            toast("파일 다운로드중 오류가 발생하였습니다.")
+            settingDownloadErrorState()
         }
     }
 
@@ -87,19 +104,26 @@ class ARCoreActivity : AppCompatActivity() {
                 renderable = modelRenderable
                 adapter.currentList[position].readable = modelRenderable
                 adapter.notifyDataSetChanged()
+                cardName = adapter.currentList[position].name
+//                renderable?.animationDataCount
             }
 
-        downloadEndMessage()
+        settingDownloadEndState()
     }
 
-    private fun downloadStartMessage(){
+    private fun settingDownloadStartState(){
         binding.progressBar.isVisible = true
         toast("서버에서 이미지를 받아오고 있습니다. 잠시만 기다려주세요..")
     }
 
-    private fun downloadEndMessage(){
+    private fun settingDownloadEndState(){
         binding.progressBar.isVisible = false
         toast("다운로드가 완료되었습니다.")
+    }
+
+    private fun settingDownloadErrorState(){
+        binding.progressBar.isVisible = false
+        toast("파일 다운로드중 오류가 발생하였습니다.")
     }
 
     private fun bindModelRecyclerView(){
@@ -113,12 +137,82 @@ class ARCoreActivity : AppCompatActivity() {
         adapter.submitList(modelList)
     }
 
-    private fun settingArFragment(){
+    private fun settingArFragment() = with(binding){
         arFragment = supportFragmentManager.findFragmentById(R.id.sceneFormFragment) as ArFragment
-        arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
-            val anchorNode = AnchorNode(hitResult.createAnchor())
-            anchorNode.renderable = renderable
-            arFragment.arSceneView.scene.addChild(anchorNode)
+        arFragment.setOnTapArPlaneListener { hitResult, plane, _ ->
+
+            when (radioGroup.checkedRadioButtonId) {
+                // 즉시 배치
+                radioInstantPlacement.id -> {
+                    settingInstantPlacement(hitResult)
+                }
+                // 이름표
+                radioNameCard.id -> {
+                    settingNameCard(hitResult)
+                }
+            }
+        }
+    }
+
+    private fun settingInstantPlacement(hitResult: HitResult) {
+        val anchorNode = AnchorNode(hitResult.createAnchor())
+        anchorNode.renderable = renderable
+        anchorNode.setOnTouchListener { _, _ ->
+            anchorNode.setParent(null)
+            return@setOnTouchListener true
+        }
+        arFragment.arSceneView.scene.addChild(anchorNode)
+    }
+
+    private fun settingNameCard(hitResult: HitResult){
+        val anchorNode =AnchorNode(hitResult.createAnchor())
+        anchorNode.setParent(arFragment.arSceneView.scene)
+        val transFromAbleNode = TransformableNode(arFragment.transformationSystem)
+        transFromAbleNode.setParent(anchorNode)
+        transFromAbleNode.renderable = renderable
+        transFromAbleNode.select()
+
+        addName(anchorNode, transFromAbleNode, cardName)
+    }
+
+    private fun addName(anchorNode: AnchorNode, node: TransformableNode, name: String?) {
+        ViewRenderable.builder().setView(this, R.layout.name_card)
+            .build()
+            .thenAccept { viewRenderable ->
+                val nameView = TransformableNode(arFragment.transformationSystem)
+                nameView.localPosition = Vector3(0f, node.localPosition.y + 0.5f, 0f)
+                nameView.setParent(anchorNode)
+                nameView.renderable = viewRenderable
+                nameView.select()
+
+                val txtName = viewRenderable.view as TextView
+                txtName.text = name
+                txtName.setOnClickListener {
+                    anchorNode.setParent(null)
+                }
+            }
+    }
+
+    private fun settingAugmentedImage() {
+        val frame = arFragment.arSceneView.arFrame ?: return
+
+        val config = arFragment.arSceneView.session?.config
+        config?.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+        config?.instantPlacementMode = Config.InstantPlacementMode.LOCAL_Y_UP
+        arFragment.arSceneView.session?.configure(config)
+
+        frame.getUpdatedTrackables(AugmentedImage::class.java).forEach { plane ->
+            if(plane.trackingState == TrackingState.TRACKING){
+                if(plane.name == "qr"){
+                    Log.e("+++++", "qr!")
+                    if(shouldConfigureSession.not()){
+                        shouldConfigureSession = true
+                        val node = MyARNode(this, renderableFileList[position])
+                        node.setImage(plane)
+                        arFragment.arSceneView.scene.addChild(node)
+                    }
+                }
+            }
         }
     }
 }
