@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Example 5"
-        app:layout_constraintTop_toBottomOf="@id/btnEx3"
+        app:layout_constraintTop_toBottomOf="@id/btnEx4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
