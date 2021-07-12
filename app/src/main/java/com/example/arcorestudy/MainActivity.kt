@@ -37,6 +37,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<AnimationActivity>()
         }
 
+        binding.btnEx5.setOnClickListener {
+            startActivity<CloudAnchorActivity>()
+        }
+
     }
 
 }

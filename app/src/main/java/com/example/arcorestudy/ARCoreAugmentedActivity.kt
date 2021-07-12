@@ -18,6 +18,7 @@ import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import org.jetbrains.anko.image
 import org.jetbrains.anko.toast
 import java.io.File
 import java.io.IOException
@@ -28,7 +29,7 @@ class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
     private val binding : ActivityArcoreAugmentedBinding by lazy { ActivityArcoreAugmentedBinding.inflate(layoutInflater) }
 
     private lateinit var session : Session
-    private val fileName = "out.glb"
+    private val fileName = "spider.glb"
     private var isAgumentedImageVisible : Boolean = false
     private var renderable : ModelRenderable? = null
 
@@ -159,6 +160,8 @@ class ARCoreAugmentedActivity : AppCompatActivity(), Scene.OnUpdateListener{
             if(augmentedImage.trackingState == TrackingState.TRACKING){
                 if(augmentedImage.name == "qr"){
                     if(isAgumentedImageVisible.not()){
+                        binding.textView.text = "QR 인식 완료"
+                        Log.e("+++++", "시작합니다")
                         isAgumentedImageVisible = true
                         val anchorNode = AnchorNode()
                         anchorNode.renderable = renderable

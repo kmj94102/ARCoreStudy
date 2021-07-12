@@ -105,7 +105,7 @@ class ARCoreActivity : AppCompatActivity() {
                 adapter.currentList[position].readable = modelRenderable
                 adapter.notifyDataSetChanged()
                 cardName = adapter.currentList[position].name
-//                renderable?.animationDataCount
+                Log.e("++++++", "${renderable?.animationDataCount}")
             }
 
         settingDownloadEndState()
@@ -132,7 +132,7 @@ class ARCoreActivity : AppCompatActivity() {
         modelList.add(ModelItem(imageResource = R.drawable.ivysaur, name = "이상해풀", fileName = "Ivysaur.glb"))
         modelList.add(ModelItem(imageResource = R.drawable.out, name = "고우스트", fileName = "out.glb"))
         modelList.add(ModelItem(imageResource = R.drawable.spider, name = "스파이더맨", fileName = "spider.glb"))
-        modelList.add(ModelItem(imageResource = R.drawable.clock, name = "시계", fileName = "clock.glb"))
+        modelList.add(ModelItem(imageResource = R.drawable.clock, name = "시계", fileName = "Bee.glb"))
 
         adapter.submitList(modelList)
     }
