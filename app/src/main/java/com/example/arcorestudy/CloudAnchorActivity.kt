@@ -1,5 +1,6 @@
 package com.example.arcorestudy
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -18,12 +19,13 @@ import com.google.ar.sceneform.ux.TransformableNode
 import org.jetbrains.anko.alert
 import java.io.File
 
+@SuppressLint("SetTextI18n")
 class CloudAnchorActivity : AppCompatActivity() {
 
     private lateinit var fragment : CustomArFragment
-    private lateinit var storageManager : StorageManager
     private var cloudAnchor: Anchor? = null
     private var appAnchorState = AppAnchorState.NONE
+    private lateinit var storageManager : StorageManager
 
     private val binding : ActivityCloudAnchorBinding by lazy {
         ActivityCloudAnchorBinding.inflate(layoutInflater)
@@ -42,16 +44,13 @@ class CloudAnchorActivity : AppCompatActivity() {
 
         binding.resolveButton.setOnClickListener {
             if(cloudAnchor != null){
-                binding.textView.text = "초기화 후 이용해주세요"
+                binding.textView.text = "Please clear Anchor"
                 return@setOnClickListener
             }
 
-
-            ResolveDialog(this){ dialogValue ->
-                onResolveOkPressed(dialogValue)
+            ResolveDialog(this){
+                onResolveOkPressed(it)
             }.show()
-//            dialog.setOkListener(this)
-//            dialog.show(supportFragmentManager, "Resolve")
         }
 
         fragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
@@ -63,9 +62,9 @@ class CloudAnchorActivity : AppCompatActivity() {
             setCloudAnchor(newAnchor)
 
             appAnchorState = AppAnchorState.HOSTING
-            binding.textView.text = "호스팅 중..."
+            binding.textView.text = "Now hosting anchor..."
 
-            placeObject(fragment, cloudAnchor, "spider.glb")
+            placeObject(fragment, cloudAnchor, "out.glb")
         }
 
         storageManager = StorageManager(this)
@@ -77,11 +76,20 @@ class CloudAnchorActivity : AppCompatActivity() {
             override fun onCloudAnchorIdAvailable(cloudAnchorId: String?) {
                 val resolvedAnchor = fragment.arSceneView.session!!.resolveCloudAnchor(cloudAnchorId)
                 setCloudAnchor(resolvedAnchor)
-                placeObject(fragment, cloudAnchor, "spider.glb")
-                binding.textView.text = "Now Resolving Anchor..."
+                placeObject(fragment, cloudAnchor, "out.glb")
+                binding.textView.text = "Now Resolving Anchor.."
                 appAnchorState = AppAnchorState.RESOLVING
             }
         })
+    }
+
+    private fun setCloudAnchor(newAnchor: Anchor?){
+        if(cloudAnchor != null){
+            cloudAnchor?.detach()
+        }
+
+        cloudAnchor = newAnchor
+        appAnchorState = AppAnchorState.NONE
     }
 
     private fun placeObject(arFragment: ArFragment, anchor : Anchor?, fileName : String){
@@ -126,15 +134,6 @@ class CloudAnchorActivity : AppCompatActivity() {
         node.select()
     }
 
-    private fun setCloudAnchor(newAnchor: Anchor?){
-        if(cloudAnchor != null){
-            cloudAnchor?.detach()
-        }
-
-        cloudAnchor = newAnchor
-        appAnchorState = AppAnchorState.NONE
-    }
-
     private fun onUpdateFrame(frameTime: FrameTime){
         checkUpdatedAnchor()
     }
@@ -169,6 +168,7 @@ class CloudAnchorActivity : AppCompatActivity() {
 
                 appAnchorState = AppAnchorState.NONE
             } else if (cloudState == CloudAnchorState.SUCCESS) {
+                binding.textView.text = "Anchor resolved successfully"
                 appAnchorState = AppAnchorState.RESOLVED
             }
         }

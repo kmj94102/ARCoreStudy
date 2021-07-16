@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="20dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/textTitle"
+        android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resolve Anchor"
-        android:textSize="16sp"
+        android:text="Resolve"
+        android:textSize="18sp"
         android:textColor="#000"
-        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <EditText
-        android:id="@+id/editCode"
-        android:layout_width="0dp"
+        android:id="@+id/editResolve"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="code"
-        app:layout_constraintTop_toBottomOf="@id/textTitle"
+        app:layout_constraintTop_toBottomOf="@id/txtTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -34,9 +32,8 @@
         android:layout_marginTop="15dp"
         android:text="확인"
         android:textSize="16sp"
-        android:textColor="@color/teal_200"
-        app:layout_constraintTop_toBottomOf="@id/editCode"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/purple_700"
+        app:layout_constraintTop_toBottomOf="@id/editResolve"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
@@ -44,10 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:textSize="16sp"
         android:text="취소"
+        android:textSize="16sp"
         app:layout_constraintTop_toTopOf="@id/btnOk"
-        app:layout_constraintBottom_toBottomOf="@id/btnOk"
         app:layout_constraintEnd_toStartOf="@id/btnOk"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

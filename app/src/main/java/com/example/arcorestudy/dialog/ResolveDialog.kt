@@ -22,7 +22,8 @@ class ResolveDialog(context: Context, val okClickListener : (String) -> Unit) : 
         }
 
         binding.btnOk.setOnClickListener {
-            okClickListener(binding.editCode.text.toString())
+            okClickListener(binding.editResolve.text.toString())
+            dismiss()
         }
 
     }
