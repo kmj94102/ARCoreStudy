@@ -1,10 +1,12 @@
 package com.example.arcorestudy
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.StorageManager.CloudAnchorIdListener
 import com.example.arcorestudy.databinding.ActivityCloudAnchorBinding
+import com.example.arcorestudy.dialog.ResolveDialog
 import com.google.ar.core.Anchor
 import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Plane
@@ -17,10 +19,10 @@ import com.google.ar.sceneform.ux.TransformableNode
 import org.jetbrains.anko.alert
 import java.io.File
 
-class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListener {
+@SuppressLint("SetTextI18n")
+class CloudAnchorActivity : AppCompatActivity() {
 
     private lateinit var fragment : CustomArFragment
-    private val snackbarHelper = SnackbarHelper()
     private var cloudAnchor: Anchor? = null
     private var appAnchorState = AppAnchorState.NONE
     private lateinit var storageManager : StorageManager
@@ -42,13 +44,13 @@ class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListene
 
         binding.resolveButton.setOnClickListener {
             if(cloudAnchor != null){
-                snackbarHelper.showMessageWithDismiss(this, "Please clear Anchor")
+                binding.textView.text = "Please clear Anchor"
                 return@setOnClickListener
             }
 
-            val dialog = ResolveDialogFragment()
-            dialog.setOkListener(this)
-            dialog.show(supportFragmentManager, "Resolve")
+            ResolveDialog(this){
+                onResolveOkPressed(it)
+            }.show()
         }
 
         fragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
@@ -60,9 +62,9 @@ class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListene
             setCloudAnchor(newAnchor)
 
             appAnchorState = AppAnchorState.HOSTING
-            snackbarHelper.showMessage(this, "Now hosting anchor...")
+            binding.textView.text = "Now hosting anchor..."
 
-            placeObject(fragment, cloudAnchor, "spider.glb")
+            placeObject(fragment, cloudAnchor, "out.glb")
         }
 
         storageManager = StorageManager(this)
@@ -72,14 +74,22 @@ class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListene
         val shortCode = dialogValue.toInt()
         storageManager.getCloudAnchorID(shortCode, object : CloudAnchorIdListener {
             override fun onCloudAnchorIdAvailable(cloudAnchorId: String?) {
-                val resolvedAnchor = fragment.arSceneView.session!!
-                    .resolveCloudAnchor(cloudAnchorId)
+                val resolvedAnchor = fragment.arSceneView.session!!.resolveCloudAnchor(cloudAnchorId)
                 setCloudAnchor(resolvedAnchor)
-                placeObject(fragment, cloudAnchor, "spider.glb")
-                snackbarHelper.showMessage(this@CloudAnchorActivity, "Now Resolving Anchor...")
+                placeObject(fragment, cloudAnchor, "out.glb")
+                binding.textView.text = "Now Resolving Anchor.."
                 appAnchorState = AppAnchorState.RESOLVING
             }
         })
+    }
+
+    private fun setCloudAnchor(newAnchor: Anchor?){
+        if(cloudAnchor != null){
+            cloudAnchor?.detach()
+        }
+
+        cloudAnchor = newAnchor
+        appAnchorState = AppAnchorState.NONE
     }
 
     private fun placeObject(arFragment: ArFragment, anchor : Anchor?, fileName : String){
@@ -124,16 +134,6 @@ class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListene
         node.select()
     }
 
-    private fun setCloudAnchor(newAnchor: Anchor?){
-        if(cloudAnchor != null){
-            cloudAnchor?.detach()
-        }
-
-        cloudAnchor = newAnchor
-        appAnchorState = AppAnchorState.NONE
-        snackbarHelper.hide(this)
-    }
-
     private fun onUpdateFrame(frameTime: FrameTime){
         checkUpdatedAnchor()
     }
@@ -145,37 +145,30 @@ class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListene
         val cloudState = cloudAnchor!!.cloudAnchorState
         if (appAnchorState === AppAnchorState.HOSTING) {
             if (cloudState.isError) {
-                snackbarHelper.showMessageWithDismiss(this, "Error hosting anchor.. $cloudState")
                 binding.textView.text = "Error hosting anchor.. $cloudState"
                 appAnchorState = AppAnchorState.NONE
             } else if (cloudState == CloudAnchorState.SUCCESS) {
                 storageManager.nextShortCode(object : StorageManager.ShortCodeListener{
                     override fun onShortCodeAvailable(shortCode: Int?) {
                         if (shortCode == null) {
-                            snackbarHelper.showMessageWithDismiss(this@CloudAnchorActivity, "Could not get shortCode")
+                            binding.textView.text = "Could not get shortCode"
                             return
                         }
                         storageManager.storeUsingShortCode(shortCode, cloudAnchor!!.cloudAnchorId)
-                        snackbarHelper.showMessageWithDismiss(
-                            this@CloudAnchorActivity, "Anchor hosted! Cloud Short Code: $shortCode"
-                        )
                         binding.textView.text = "Anchor hosted! Cloud Short Code: $shortCode"
                     }
 
                 })
-                snackbarHelper.showMessageWithDismiss(this, "Anchor hosted with id ${cloudAnchor?.cloudAnchorId}")
+                binding.textView.text = "Anchor hosted with id ${cloudAnchor?.cloudAnchorId}"
                 appAnchorState = AppAnchorState.HOSTED
             }
         }else if (appAnchorState === AppAnchorState.RESOLVING) {
             if (cloudState.isError) {
-                snackbarHelper.showMessageWithDismiss(
-                    this, "Error resolving anchor.. $cloudState"
-                )
                 binding.textView.text = "Error resolving anchor : $cloudState"
 
                 appAnchorState = AppAnchorState.NONE
             } else if (cloudState == CloudAnchorState.SUCCESS) {
-                snackbarHelper.showMessageWithDismiss(this, "Anchor resolved successfully")
+                binding.textView.text = "Anchor resolved successfully"
                 appAnchorState = AppAnchorState.RESOLVED
             }
         }
@@ -187,10 +180,6 @@ class CloudAnchorActivity : AppCompatActivity(), ResolveDialogFragment.OkListene
         HOSTED,
         RESOLVING,
         RESOLVED
-    }
-
-    override fun onOkPressed(dialogValue: String) {
-        onResolveOkPressed(dialogValue)
     }
 
 }

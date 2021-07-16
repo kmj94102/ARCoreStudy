@@ -1,15 +1,13 @@
 package com.example.arcorestudy
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
-import android.widget.Toast
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.databinding.ActivityAnimationBinding
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
@@ -17,17 +15,11 @@ import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.SkeletonNode
 import com.google.ar.sceneform.animation.ModelAnimator
-import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import com.google.firebase.FirebaseApp
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
-import org.jetbrains.anko.toast
-import java.io.File
+
 
 class AnimationActivity : AppCompatActivity() {
 
@@ -35,7 +27,7 @@ class AnimationActivity : AppCompatActivity() {
         ActivityAnimationBinding.inflate(layoutInflater)
     }
     lateinit var arFragment: ArFragment
-    private lateinit var model: Uri
+    private lateinit var uri: Uri
     private var renderable: ModelRenderable? = null
     private var animator: ModelAnimator? = null
 
@@ -44,14 +36,14 @@ class AnimationActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         arFragment = supportFragmentManager.findFragmentById(R.id.sceneFormFragment) as ArFragment
-        model = Uri.parse("model_fight.sfb")
+        uri = Uri.parse("model_fight.sfb")
 
         arFragment.setOnTapArPlaneListener { hitResult: HitResult, plane: Plane, motionEvent: MotionEvent ->
             if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) {
                 return@setOnTapArPlaneListener
             }
             val anchor = hitResult.createAnchor()
-            placeObject(arFragment, anchor, model)
+            placeObject(arFragment, anchor, uri)
         }
 
         binding.animateKickButton.setOnClickListener { animateModel("Character|Kick") }
@@ -72,9 +64,9 @@ class AnimationActivity : AppCompatActivity() {
         }
     }
 
-    private fun placeObject(fragment: ArFragment, anchor: Anchor, model: Uri) {
+    private fun placeObject(fragment: ArFragment, anchor: Anchor, uri: Uri) {
         ModelRenderable.builder()
-            .setSource(fragment.context, model)
+            .setSource(fragment.context, uri)
             .build()
             .thenAccept {
                 renderable = it
