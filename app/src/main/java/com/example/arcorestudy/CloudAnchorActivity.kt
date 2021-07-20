@@ -183,4 +183,3 @@ class CloudAnchorActivity : AppCompatActivity() {
     }
 
 }
-

@@ -38,7 +38,7 @@ class AnimationActivity : AppCompatActivity() {
         arFragment = supportFragmentManager.findFragmentById(R.id.sceneFormFragment) as ArFragment
         uri = Uri.parse("model_fight.sfb")
 
-        arFragment.setOnTapArPlaneListener { hitResult: HitResult, plane: Plane, motionEvent: MotionEvent ->
+        arFragment.setOnTapArPlaneListener { hitResult, plane, _ ->
             if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) {
                 return@setOnTapArPlaneListener
             }

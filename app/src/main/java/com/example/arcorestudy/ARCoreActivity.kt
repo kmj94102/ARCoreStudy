@@ -11,6 +11,7 @@ import com.example.arcorestudy.adapter.ModelItem
 import com.example.arcorestudy.databinding.ActivityArcoreBinding
 import com.google.ar.core.*
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
@@ -26,7 +27,7 @@ import java.io.IOException
 class ARCoreActivity : AppCompatActivity() {
 
     private val binding : ActivityArcoreBinding by lazy { ActivityArcoreBinding.inflate(layoutInflater) }
-    private lateinit var arFragment : ArFragment
+    private lateinit var arFragment : CustomArFragment2
 
     private lateinit var adapter: ModelAdapter
     private var cardName : String? = null
@@ -138,7 +139,9 @@ class ARCoreActivity : AppCompatActivity() {
     }
 
     private fun settingArFragment() = with(binding){
-        arFragment = supportFragmentManager.findFragmentById(R.id.sceneFormFragment) as ArFragment
+        arFragment = supportFragmentManager.findFragmentById(R.id.sceneFormFragment) as CustomArFragment2
+        arFragment.arSceneView.scene.addOnUpdateListener(this@ARCoreActivity::onUpdateFrame)
+
         arFragment.setOnTapArPlaneListener { hitResult, plane, _ ->
 
             when (radioGroup.checkedRadioButtonId) {
@@ -193,22 +196,23 @@ class ARCoreActivity : AppCompatActivity() {
             }
     }
 
+    private fun onUpdateFrame(frameTime: FrameTime){
+        if(binding.radioAugmentedImage.isChecked){
+            settingAugmentedImage()
+        }
+    }
+
     private fun settingAugmentedImage() {
         val frame = arFragment.arSceneView.arFrame ?: return
 
-        val config = arFragment.arSceneView.session?.config
-        config?.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
-        config?.instantPlacementMode = Config.InstantPlacementMode.LOCAL_Y_UP
-        arFragment.arSceneView.session?.configure(config)
-
-        frame.getUpdatedTrackables(AugmentedImage::class.java).forEach { plane ->
-            if(plane.trackingState == TrackingState.TRACKING){
-                if(plane.name == "qr"){
+        frame.getUpdatedTrackables(AugmentedImage::class.java).forEach { augmentedImage ->
+            if(augmentedImage.trackingState == TrackingState.TRACKING){
+                if(augmentedImage.name == "qr"){
                     Log.e("+++++", "qr!")
                     if(shouldConfigureSession.not()){
                         shouldConfigureSession = true
                         val node = MyARNode(this, renderableFileList[position])
-                        node.setImage(plane)
+                        node.setImage(augmentedImage)
                         arFragment.arSceneView.scene.addChild(node)
                     }
                 }
