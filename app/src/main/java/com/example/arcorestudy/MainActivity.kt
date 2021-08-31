@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<CloudAnchorActivity>()
         }
 
+        binding.btnEx6.setOnClickListener {
+            startActivity<MapAnchorActivity>()
+        }
+
     }
 
 }

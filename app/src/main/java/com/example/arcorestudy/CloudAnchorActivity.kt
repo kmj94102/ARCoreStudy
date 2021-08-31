@@ -143,7 +143,7 @@ class CloudAnchorActivity : AppCompatActivity() {
             return
         }
         val cloudState = cloudAnchor!!.cloudAnchorState
-        if (appAnchorState === AppAnchorState.HOSTING) {
+        if (appAnchorState == AppAnchorState.HOSTING) {
             if (cloudState.isError) {
                 binding.textView.text = "Error hosting anchor.. $cloudState"
                 appAnchorState = AppAnchorState.NONE
@@ -162,7 +162,7 @@ class CloudAnchorActivity : AppCompatActivity() {
                 binding.textView.text = "Anchor hosted with id ${cloudAnchor?.cloudAnchorId}"
                 appAnchorState = AppAnchorState.HOSTED
             }
-        }else if (appAnchorState === AppAnchorState.RESOLVING) {
+        }else if (appAnchorState == AppAnchorState.RESOLVING) {
             if (cloudState.isError) {
                 binding.textView.text = "Error resolving anchor : $cloudState"
 
