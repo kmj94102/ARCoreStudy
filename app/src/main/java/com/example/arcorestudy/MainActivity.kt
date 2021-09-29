@@ -3,6 +3,7 @@ package com.example.arcorestudy
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.databinding.ActivityMainBinding
+import com.example.arcorestudy.map.MapAnchorActivity
 import org.jetbrains.anko.startActivity
 
 class MainActivity : AppCompatActivity() {

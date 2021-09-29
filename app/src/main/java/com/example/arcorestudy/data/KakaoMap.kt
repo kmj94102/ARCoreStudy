@@ -3,7 +3,7 @@ package com.example.arcorestudy.data
 // 검색 결과를 담는 클래스
 data class ResultSearchKeyword(
     var meta: PlaceMeta,                // 장소 메타데이터
-    var documents: List<Place>          // 검색 결과
+    var documents: List<PlaceResult>          // 검색 결과
 )
 
 data class PlaceMeta(
@@ -19,7 +19,7 @@ data class RegionInfo(
     var selected_region: String         // 인식된 지역 리스트 중, 현재 검색에 사용된 지역 정보
 )
 
-data class Place(
+data class PlaceResult(
     var id: String,                     // 장소 ID
     var place_name: String,             // 장소명, 업체명
     var category_name: String,          // 카테고리 이름

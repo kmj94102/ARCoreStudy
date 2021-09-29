@@ -1,4 +1,4 @@
-package com.example.arcorestudy
+package com.example.arcorestudy.map
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
