@@ -8,9 +8,8 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -20,9 +19,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ARCoreStudy">
         <activity
+            android:name=".PokemonGoActivity"
+            android:exported="true" />
+        <activity
             android:name=".map.MapAnchorActivity"
             android:exported="true" />
-        <activity android:name=".CloudAnchorActivity"></activity>
+        <activity android:name=".CloudAnchorActivity" />
         <activity android:name=".ARCoreAugmentedActivity" />
         <activity android:name=".ARCoreActivity" />
         <activity android:name=".AnimationActivity" />

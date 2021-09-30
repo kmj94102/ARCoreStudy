@@ -12,19 +12,19 @@ import java.io.IOException
 class CustomArFragment2 : ArFragment() {
 
     override fun getSessionConfiguration(session: Session?): Config {
-        planeDiscoveryController.setInstructionView(null)
+        planeDiscoveryController.hide()
 
         val config = super.getSessionConfiguration(session)
         config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
         config.focusMode = Config.FocusMode.AUTO
         config.depthMode = Config.DepthMode.AUTOMATIC
-        config.lightEstimationMode= Config.LightEstimationMode.DISABLED
+        config.lightEstimationMode= Config.LightEstimationMode.AMBIENT_INTENSITY
         config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
 
         if(!buildDatabase(config, session)){
             Log.e("++++++", "Error database")
         }
-        config.updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+        config.updateMode = Config.UpdateMode.BLOCKING
 
         return config
     }

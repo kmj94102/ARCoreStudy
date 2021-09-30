@@ -1,0 +1,92 @@
+package com.example.arcorestudy
+
+import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
+import com.example.arcorestudy.adapter.ModelItem
+import com.example.arcorestudy.databinding.ActivityPokemonGoBinding
+import com.example.arcorestudy.modle.DEFAULT_POSITION_POKEMON
+import com.example.arcorestudy.modle.DEFAULT_POSITION_POKE_BALL
+import com.example.arcorestudy.modle.ModelRenderer
+import com.example.arcorestudy.modle.RenderingModel
+import com.google.ar.core.Pose
+import com.google.ar.core.Session
+import com.google.ar.core.TrackingState
+import com.google.ar.sceneform.assets.RenderableSource
+import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.ux.ArFragment
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.io.File
+import java.io.IOException
+
+class PokemonGoActivity : AppCompatActivity() {
+
+    private val binding : ActivityPokemonGoBinding by lazy { ActivityPokemonGoBinding.inflate(layoutInflater) }
+    private lateinit var arFragment : ArFragment
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+
+        initArFragment()
+
+    }
+
+    private fun initArFragment(){
+        arFragment = supportFragmentManager.findFragmentById(R.id.sceneFromUxFragment) as ArFragment
+
+        with(arFragment){
+            planeDiscoveryController.hide()
+            planeDiscoveryController.setInstructionView(null)
+            arSceneView.planeRenderer.isVisible = false
+            arSceneView.scene.addOnUpdateListener {
+                onUpdate(it)
+
+                // AR 프레임의 상태가 추적인지 확인합니다.
+                val arFrame = arSceneView.arFrame ?: return@addOnUpdateListener
+                if (arFrame.camera?.trackingState != TrackingState.TRACKING){
+                    return@addOnUpdateListener
+                }
+
+                // 기본 렌더링 모델로 전역 앵커 초기화
+                arSceneView.session?.let { session ->
+                    initializeModels(this, session)
+                }
+
+            }
+        }
+    }
+
+    private fun initializeModels(arFragment: ArFragment, session: Session){
+        // 확인 필요 : !viewModel.isCaught
+        if (session.allAnchors.isEmpty()){
+            val pose = Pose(floatArrayOf(0f, 0f, -1f), floatArrayOf(0f, 0f, 0f, 1f))
+            session.createAnchor(pose).apply {
+                val pokemon = RenderingModel(
+                    name = "eevee",
+                    model = "eevee.sfb",
+                    localPosition = DEFAULT_POSITION_POKEMON
+                )
+                ModelRenderer.renderObject(this@PokemonGoActivity, pokemon) { renderable ->
+                    ModelRenderer.addPokemonOnScene(arFragment, this, renderable, pokemon)
+                }
+
+                val pokeBall = RenderingModel(
+                    name = "pokeball",
+                    model = "pokeball.sfb",
+                    scale = 0.1f,
+                    localPosition = DEFAULT_POSITION_POKE_BALL
+                )
+                ModelRenderer.renderObject(this@PokemonGoActivity, pokeBall) { renderable ->
+                    ModelRenderer.addPokeBallOnScene(arFragment, this, this, renderable, pokeBall, pokemon){
+                        // 확인 필요
+                        // viewModel.insertPokemonModel(pokemon)
+                    }
+                }
+            }
+        }
+    }
+
+}

@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<MapAnchorActivity>()
         }
 
+        binding.btnEx7.setOnClickListener {
+            startActivity<PokemonGoActivity>()
+        }
+
     }
 
 }

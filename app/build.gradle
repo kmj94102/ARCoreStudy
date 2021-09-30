@@ -15,6 +15,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -47,7 +48,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     // ar core : https://developers.google.com/ar/develop/java/enable-arcore#ar-required_1
-    implementation 'com.google.ar:core:1.25.0'
+    implementation 'com.google.ar:core:1.26.0'
     implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.17.1'
     implementation 'com.google.ar.sceneform:animation:1.17.1'
     implementation 'com.google.ar.sceneform:assets:1.17.1'
