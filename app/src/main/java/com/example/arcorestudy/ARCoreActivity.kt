@@ -173,6 +173,12 @@ class ARCoreActivity : AppCompatActivity() {
         val transFromAbleNode = TransformableNode(arFragment.transformationSystem)
         transFromAbleNode.setParent(anchorNode)
         transFromAbleNode.renderable = renderable
+
+        if(cardName == "이상해풀"){
+            transFromAbleNode.scaleController.minScale = 0.1f
+            transFromAbleNode.scaleController.maxScale = 0.5f
+        }
+
         transFromAbleNode.select()
 
         addName(anchorNode, transFromAbleNode, cardName)

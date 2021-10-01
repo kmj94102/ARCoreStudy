@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ARCoreStudy">
         <activity
+            android:name=".MaterialActivity"
+            android:exported="true" />
+        <activity
             android:name=".PokemonGoActivity"
             android:exported="true" />
         <activity
