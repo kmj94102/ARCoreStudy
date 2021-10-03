@@ -50,6 +50,10 @@ class MainActivity : AppCompatActivity() {
             startActivity<PokemonGoActivity>()
         }
 
+        binding.btnEx8.setOnClickListener {
+            startActivity<MaterialActivity>()
+        }
+
     }
 
 }

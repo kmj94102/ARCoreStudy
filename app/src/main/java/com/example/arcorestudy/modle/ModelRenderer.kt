@@ -3,6 +3,7 @@ package com.example.arcorestudy.modle
 import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.MotionEvent
 import com.google.ar.core.Anchor
 import com.google.ar.sceneform.AnchorNode
@@ -80,7 +81,7 @@ object ModelRenderer {
         renderingModel: RenderingModel,
         pokemon: RenderingModel,
         doAfterCatch: () -> Unit
-    ){
+    ) {
         val anchorNode = AnchorNode(anchor)
         TransformableNode(fragment.transformationSystem).apply {
             name = renderingModel.name
@@ -104,15 +105,15 @@ object ModelRenderer {
                         anchorNode = node,
                         targetPosition = targetPosition,
                         durationTime = 750L
-                    ){
+                    ) {
                         val length = Vector3.subtract(pokemonPosition, targetPosition).length()
-                        if(length > 0.45){
+                        if (length > 0.45) {
                             ModelAnimations.translateModel(
                                 anchorNode = node,
                                 targetPosition = DEFAULT_POSITION_POKE_BALL,
                                 durationTime = 0
                             )
-                        }else{
+                        } else {
                             doAfterCatch()
                             pokemonAnchor.detach()
                         }
@@ -121,7 +122,7 @@ object ModelRenderer {
                     ModelAnimations.rotateModel(
                         anchorNode = node,
                         durationTime = 500L
-                    ){
+                    ) {
                         node.setLookDirection(Vector3(0f, 0f, 1f))
                     }
                 }

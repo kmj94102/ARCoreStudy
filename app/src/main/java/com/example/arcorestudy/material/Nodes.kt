@@ -1,13 +1,17 @@
 package com.example.arcorestudy.material
 
+import android.content.Context
 import com.google.ar.core.DepthPoint
 import com.google.ar.core.Plane
 import com.google.ar.core.Point
 import com.google.ar.core.Pose
 import com.google.ar.sceneform.ArSceneView
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.ux.TransformableNode
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.reflect.KClass
+import com.google.ar.sceneform.rendering.MaterialFactory.makeOpaqueWithColor
+import com.google.ar.sceneform.rendering.ShapeFactory
 
 sealed class Nodes(
     name: String,
@@ -45,4 +49,37 @@ sealed class Nodes(
 
     }
 
+}
+
+sealed class MaterialNode(
+    name: String,
+    val properties: MaterialProperties,
+    coordinator: Coordinator,
+    settings: Settings
+) : Nodes(name, coordinator, settings){
+    init {
+        update()
+    }
+
+    fun update(block: (MaterialProperties.() -> Unit) = {}){
+        properties.update(renderable?.material, block)
+    }
+}
+
+class Sphere(
+    context: Context,
+    properties: MaterialProperties,
+    coordinator: Coordinator,
+    settings: Settings
+) : MaterialNode("Sphere", properties, coordinator, settings) {
+    companion object {
+        private const val RADIUS = 0.05f
+        private val CENTER = Vector3(0f, RADIUS, 0F)
+    }
+
+    init {
+        val color = properties.color.toArColor()
+        makeOpaqueWithColor(context.applicationContext, color)
+            .thenAccept { renderable = ShapeFactory.makeSphere(RADIUS, CENTER, it) }
+    }
 }
