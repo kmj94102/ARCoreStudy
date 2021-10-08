@@ -13,7 +13,9 @@ class Coordinator(
     private val onArTap: (MotionEvent) -> Unit,
     private val onNodeSelected: (old: Nodes?, new: Nodes?) -> Unit,
     private val onNodeFocused: (nodes: Nodes?) -> Unit
-) : TransformationSystem(context.resources.displayMetrics, Footprint(context)){
+) : TransformationSystem(
+    context.resources.displayMetrics, Footprint(context)
+){
 
     override fun getSelectedNode(): Nodes? = super.getSelectedNode() as? Nodes
 
@@ -24,9 +26,7 @@ class Coordinator(
         }
     })
 
-    override fun getSelectionVisualizer(): Footprint {
-        return super.getSelectionVisualizer() as Footprint
-    }
+    override fun getSelectionVisualizer(): Footprint = super.getSelectionVisualizer() as Footprint
 
     override fun setSelectionVisualizer(selectionVisualizer: SelectionVisualizer?) {
         // 선택 시각화 도우미 변경 방지

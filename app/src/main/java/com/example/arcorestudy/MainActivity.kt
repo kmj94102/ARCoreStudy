@@ -1,6 +1,7 @@
 package com.example.arcorestudy
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.databinding.ActivityMainBinding
 import com.example.arcorestudy.map.MapAnchorActivity
@@ -49,6 +50,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnEx7.setOnClickListener {
             startActivity<PokemonGoActivity>()
         }
+
+        binding.btnEx8.setOnClickListener {
+            startActivity<MaterialActivity>()
+        }
+
+        Log.e("+++++", "메인화면 진입")
 
     }
 
