@@ -1,10 +1,8 @@
 package com.example.arcorestudy
 
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.example.arcorestudy.adapter.ModelItem
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.example.arcorestudy.databinding.ActivityPokemonGoBinding
 import com.example.arcorestudy.modle.DEFAULT_POSITION_POKEMON
 import com.example.arcorestudy.modle.DEFAULT_POSITION_POKE_BALL
@@ -13,13 +11,7 @@ import com.example.arcorestudy.modle.RenderingModel
 import com.google.ar.core.Pose
 import com.google.ar.core.Session
 import com.google.ar.core.TrackingState
-import com.google.ar.sceneform.assets.RenderableSource
-import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
-import java.io.File
-import java.io.IOException
 
 class PokemonGoActivity : AppCompatActivity() {
 
@@ -83,6 +75,14 @@ class PokemonGoActivity : AppCompatActivity() {
                     ModelRenderer.addPokeBallOnScene(arFragment, this, this, renderable, pokeBall, pokemon){
                         // 확인 필요
                         // viewModel.insertPokemonModel(pokemon)
+                        AlertDialog.Builder(this@PokemonGoActivity).apply {
+                            title = "GET!!!"
+                            setMessage("eevee catch!!")
+                            setPositiveButton("확인") { _, _ ->
+
+                            }
+                            create()
+                        }.show()
                     }
                 }
             }

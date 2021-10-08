@@ -8,8 +8,8 @@ inline fun ObjectAnimator.doWhenFinish(
     crossinline block: () -> Unit
 ){
     addListener(object : Animator.AnimatorListener{
-        override fun onAnimationStart(animation: Animator?) = block()
-        override fun onAnimationEnd(animation: Animator?) = Unit
+        override fun onAnimationEnd(animation: Animator?) = block()
+        override fun onAnimationStart(animation: Animator?) = Unit
         override fun onAnimationCancel(animation: Animator?) = Unit
         override fun onAnimationRepeat(animation: Animator?) = Unit
     })

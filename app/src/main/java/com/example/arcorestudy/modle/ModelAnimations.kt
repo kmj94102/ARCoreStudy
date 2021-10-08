@@ -1,7 +1,6 @@
 package com.example.arcorestudy.modle
 
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
@@ -34,9 +33,9 @@ object ModelAnimations {
 
     inline fun rotateModel(
         anchorNode: Node,
-        durationTime: Long,
-        crossinline doWhenFinish: () -> Unit
-    ){
+        durationTime: Long = 150L,
+        crossinline doWhenFinish: () -> Unit = {}
+    ) {
         ObjectAnimator().apply {
             setAutoCancel(false)
             target = anchorNode
@@ -45,7 +44,7 @@ object ModelAnimations {
                 Quaternion.axisAngle(Vector3(0.0f, 0.0f, 0.0f), 0.0f),
                 Quaternion.axisAngle(Vector3(2.0f, 2.0f, 2.0f), 2360f)
             )
-            setPropertyName("localPosition")
+            setPropertyName("localRotation")
             setEvaluator(QuaternionEvaluator())
             interpolator = AccelerateDecelerateInterpolator()
             start()
