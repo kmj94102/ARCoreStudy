@@ -2,6 +2,7 @@ package com.example.arcorestudy
 
 import android.Manifest
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -61,7 +62,6 @@ class MaterialActivity : AppCompatActivity() {
         val camera = frame?.camera
         val state = camera?.trackingState
         val reason = camera?.trackingFailureReason
-
     }
 
     private fun onArTap(motionEvent: MotionEvent){
@@ -73,7 +73,6 @@ class MaterialActivity : AppCompatActivity() {
 
         frame.hitTest(motionEvent).firstOrNull {
             val trackable = it.trackable
-
             when {
                 trackable is Plane && trackable.isPoseInPolygon(it.hitPose) -> true
                 trackable is DepthPoint -> true
@@ -87,12 +86,16 @@ class MaterialActivity : AppCompatActivity() {
     }
 
     private fun createNodeAndAddToScene(anchor: () -> Anchor, focus : Boolean = true){
-//        Sphere(this, materialProperties(), coordinator, settings).attach(anchor(), arSceneView.scene, focus)
-        Drawing
+        Sphere(this, materialProperties(), coordinator, settings).attach(anchor(), arSceneView.scene, focus)
     }
 
     private fun materialProperties() =
-        MaterialProperties()
+        MaterialProperties(
+            color = Color.RED,
+            metallic = binding.metallicValue.progress,
+            roughness = binding.roughnessValue.progress,
+            reflectance = binding.reflectanceValue.progress
+        )
 
     private fun onNodeSelected(old: Nodes? = coordinator.selectedNode, new: Nodes?){
 
